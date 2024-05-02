@@ -111,7 +111,7 @@ class Troll(commands.Cog): # create a class for our cog that inherits from comma
             # Check if there are other members in the channel
             if len(members) > 1:
                 # Exclude the command user from the list to avoid disconnecting themselves
-                members = [member for member in members if member != ctx.author]
+                # members = [member for member in members if member != ctx.author]
                 if members:
                     # Choose a random member to disconnect
                     member_to_disconnect = random.choice(members)
