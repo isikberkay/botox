@@ -15,10 +15,11 @@ class StatusCog(commands.Cog):
         self.change_status.cancel()  # Properly cancel the task when the cog is unloaded
 
     statuses = [
-        discord.Game("Escape From Tarkov"),
-        discord.Streaming(name="Just coding", url="http://twitch.tv/example"),
-        discord.Activity(type=discord.ActivityType.listening, name="lofi beats"),
-        discord.Activity(type=discord.ActivityType.watching, name="Person of Interest")
+        discord.Game("Detroit: Become Human"),
+        discord.Streaming(name="Just coding", url="http://twitch.tv/summit1g"),
+        discord.Activity(type=discord.ActivityType.listening, name="Lofi Beats"),
+        discord.Activity(type=discord.ActivityType.watching, name="Person of Interest"),
+        discord.Activity(type=discord.ActivityType.listening, name="ASMR"),
     ]
 
     @tasks.loop(minutes=10)
