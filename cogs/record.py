@@ -109,8 +109,14 @@ class Record(commands.Cog):
         if not voice:
             return await ctx.respond("You're not in a voice channel right now.")
         vc = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-        if vc and vc.is_connected() and vc.channel != voice.channel:
+
+        if vc and vc.recording:
+            return await ctx.respond("Already recording in this guild.")
+
+        elif vc and vc.is_connected() and vc.channel != voice.channel:
+
             await vc.move_to(voice.channel)
+
         elif not vc:
             vc = await voice.channel.connect()
         
