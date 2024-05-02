@@ -1,8 +1,9 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import os
 import datetime
 from enum import Enum
+import asyncio
 
 from config import *
 
@@ -74,23 +75,23 @@ class Record(commands.Cog):
     ######################################################################################
 
     # Commands to manage recording
-    @discord.slash_command(name="kayit_baslat", description="Starts recording the channel.")
-    async def start_recording(self, ctx):
-        voice = ctx.author.voice
-        if not voice:
-            return await ctx.respond("You're not in a vc right now")
+    # @discord.slash_command(name="kayit_baslat", description="Starts recording the channel.")
+    # async def start_recording(self, ctx):
+    #     voice = ctx.author.voice
+    #     if not voice:
+    #         return await ctx.respond("You're not in a vc right now")
 
-        vc = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-        if vc and vc.is_connected() and vc.channel != voice.channel:
-            await vc.move_to(voice.channel)
-        elif not vc:
-            vc = await voice.channel.connect()
+    #     vc = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
+    #     if vc and vc.is_connected() and vc.channel != voice.channel:
+    #         await vc.move_to(voice.channel)
+    #     elif not vc:
+    #         vc = await voice.channel.connect()
 
-        self.connections[ctx.guild.id] = vc
-        sink = discord.sinks.WaveSink()
-        vc.start_recording(sink, lambda sink=sink: self.finished_callback(sink, ctx.channel))
+    #     self.connections[ctx.guild.id] = vc
+    #     sink = discord.sinks.WaveSink()
+    #     vc.start_recording(sink, lambda sink=sink: self.finished_callback(sink, ctx.channel))
 
-        await ctx.respond("The recording has started!")
+    #     await ctx.respond("The recording has started!")
 
     @discord.slash_command(name="kayit_bitir", description="Stops recording the channel.")
     async def stop_recording(self, ctx):
@@ -101,6 +102,33 @@ class Record(commands.Cog):
             await ctx.respond("Recording stopped.")
         else:
             await ctx.respond("Not recording in this guild.")
+
+    @discord.slash_command(name="kayit_baslat", description="Starts recording the channel for 10 minutes.")
+    async def start_recording_10mins(self, ctx):
+        voice = ctx.author.voice
+        if not voice:
+            return await ctx.respond("You're not in a voice channel right now.")
+        vc = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
+        if vc and vc.is_connected() and vc.channel != voice.channel:
+            await vc.move_to(voice.channel)
+        elif not vc:
+            vc = await voice.channel.connect()
+        
+        self.connections[ctx.guild.id] = vc
+        sink = discord.sinks.WaveSink()
+        vc.start_recording(sink, lambda sink=sink: self.finished_callback(sink, ctx.channel))
+        await ctx.respond("Recording has started for 10 minutes.")
+
+        # Wait for 10 minutes before stopping the recording
+        await asyncio.sleep(600)  # 600 seconds equals 10 minutes
+        if vc and vc.recording:
+            vc.stop_recording()
+            await ctx.followup.send("Recording stopped after 10 minutes.")
+
+
+######################################################################################
+# Setup
+######################################################################################
 
 def setup(bot):
     bot.add_cog(Record(bot))
